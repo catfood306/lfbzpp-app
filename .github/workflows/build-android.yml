@@ -31,6 +31,9 @@ jobs:
     - name: Sync Capacitor
       run: npx cap sync android
     
+    - name: Fix gradlew permissions
+      run: git update-index --chmod=+x android/gradlew
+    
     - name: Build APK
       run: |
         cd android
