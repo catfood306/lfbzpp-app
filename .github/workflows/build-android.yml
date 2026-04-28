@@ -43,6 +43,18 @@ jobs:
         bash gradlew assembleRelease --stacktrace 2>&1 | tee build.log
         ls -la app/build/outputs/apk/release/
     
+    - name: Generate keystore
+      run: |
+        keytool -genkey -v -keystore lfbzpp.keystore -alias lfbzpp -keyalg RSA -keysize 2048 -validity 10000 -storepass ${{ secrets.KEYSTORE_PASSWORD }} -keypass ${{ secrets.KEY_PASSWORD }} -dname "CN=Langfeng, OU=Langfeng, O=Langfeng, L=Beijing, ST=Beijing, C=CN"
+        ls -la lfbzpp.keystore
+    
+    - name: Sign APK
+      run: |
+        cd android
+        ls -la app/build/outputs/apk/release/
+        apksigner sign --ks ../lfbzpp.keystore --ks-key-alias lfbzpp --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} --key-pass pass:${{ secrets.KEY_PASSWORD }} --out app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/app-release-unsigned.apk
+        ls -la app/build/outputs/apk/release/
+    
     - name: Upload build log
       uses: actions/upload-artifact@v4
       if: failure()
@@ -54,4 +66,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: lfbzpp-apk
-        path: android/app/build/outputs/apk/release/*.apk
+        path: android/app/build/outputs/apk/release/app-release-signed.apk
