@@ -40,7 +40,19 @@ jobs:
     - name: Build APK
       run: |
         cd android
-        bash gradlew assembleRelease --stacktrace || (echo "=== GRADLE ERROR ===" && cat app/build/outputs/logs/*.log 2>/dev/null || true && exit 1)
+        bash gradlew assembleRelease --stacktrace 2>&1 | tee build.log || true
+        if [ ! -f app/build/outputs/apk/release/app-release-unsigned.apk ]; then
+          echo "BUILD FAILED - see build.log"
+          cat build.log | tail -100
+          exit 1
+        fi
+    
+    - name: Upload build log
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-log
+        path: android/build.log
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
