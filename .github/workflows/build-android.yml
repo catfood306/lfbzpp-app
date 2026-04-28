@@ -32,11 +32,9 @@ jobs:
       run: npx cap sync android
     
     - name: Build APK
-      shell: bash
       run: |
         cd android
-        chmod +x gradlew
-        bash gradlew assembleRelease
+        java -cp gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain assembleRelease
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
