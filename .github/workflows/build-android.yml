@@ -31,13 +31,12 @@ jobs:
     - name: Sync Capacitor
       run: npx cap sync android
     
-    - name: Fix gradlew permissions
-      run: git update-index --chmod=+x android/gradlew
-    
     - name: Build APK
+      shell: bash
       run: |
         cd android
-        ./gradlew assembleRelease
+        chmod +x gradlew
+        bash gradlew assembleRelease
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
