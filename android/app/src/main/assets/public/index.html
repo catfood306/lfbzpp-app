@@ -1,0 +1,1638 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阆风八字</title>
+<style>
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F5F0E1;color:#333;font-size:14px;min-height:100vh;padding-bottom:80px}
+.top-bar{display:flex;align-items:center;height:48px;background:#fff;border-bottom:1px solid #eee;padding:0 12px;position:sticky;top:0;z-index:50}
+.top-bar .back{font-size:22px;padding:6px;cursor:pointer;flex-shrink:0}
+.top-bar .title{flex:1;text-align:center;font-size:17px;font-weight:600}
+.top-bar .menu-btn{font-size:20px;padding:6px;cursor:pointer;flex-shrink:0}
+.logo-area{text-align:center;padding:24px 16px 8px}
+.logo-icon{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#8B7355,#D4B896);display:inline-flex;align-items:center;justify-content:center;font-size:28px}
+.logo-title{font-size:22px;font-weight:700;margin-top:10px;color:#333}
+.logo-desc{font-size:12px;color:#999;margin-top:4px}
+.page{padding:0;min-height:100vh;padding-bottom:70px;box-sizing:border-box}
+.page.hidden{display:none !important}.hidden{display:none}
+#pResult{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;height:calc(100vh - 48px - 70px);padding-bottom:20px}
+.container{padding:0 12px 70px}
+.card{background:#fff;border-radius:16px;margin-bottom:16px;padding:0;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden;border:1px solid #f0ece4}
+.card-title{font-size:14px;font-weight:600;color:#333;padding:10px 12px 8px;border-bottom:1px solid #f5f5f5;background:#faf8f5}
+/* 模式切换 */
+.cal-switch{display:flex;gap:0;background:#f5f5f5;border-radius:10px;padding:3px;margin-bottom:16px}
+.cal-btn{flex:1;padding:8px;text-align:center;border-radius:8px;font-size:13px;cursor:pointer;color:#888;transition:all .2s;border:none;background:none}
+.cal-btn.active{background:#fff;color:#8B7355;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.input-row{display:flex;gap:10px;margin-bottom:12px}
+.input-group{flex:1}
+.input-label{display:block;font-size:12px;color:#888;margin-bottom:4px}
+.input-full{width:100%;height:42px;border:1px solid #e8e8e8;border-radius:8px;padding:0 12px;font-size:14px;outline:none;background:#fff}
+.input-full:focus{border-color:#8B7355}
+select.input-full{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+select.input-full:focus{border-color:#8B7355}
+.gender-row{display:flex;gap:10px;margin-bottom:14px}
+.gender-option{flex:1;height:42px;border:1px solid #e8e8e8;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all .2s;background:#fff}
+.gender-option.active{border-color:#8B7355;background:#FDF6EE;color:#8B7355;font-weight:600}
+.gender-option input{display:none}
+.btn-row{margin-top:16px}
+.btn-primary{width:100%;height:48px;background:linear-gradient(135deg,#8B7355,#9E8565);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(139,115,85,.3)}
+.btn-primary:active{transform:scale(.98)}
+/* 八字反推 */
+.bazi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.bazi-pair{display:flex;gap:4px;align-items:center}
+.bazi-pair label{font-size:12px;color:#888;width:32px;flex-shrink:0}
+.bazi-pair select{width:60px;height:36px;border:1px solid #e8e8e8;border-radius:6px;padding:0 6px;font-size:13px;outline:none}
+.bazi-pair select:focus{border-color:#8B7355}
+.bazi-row{display:flex;gap:8px;margin-top:10px}
+/* 底部Tab */
+.bottom-bar{display:flex;background:#fff;border-top:1px solid #eee;position:fixed;bottom:0;left:0;right:0;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-bar .nav-item{flex:1;text-align:center;padding:10px 0;font-size:11px;color:#999;cursor:pointer;transition:color .2s;position:relative}
+.bottom-bar .nav-item.active{color:#8B7355;font-weight:600}
+.bottom-bar .nav-item .nav-icon{font-size:22px;display:block;margin-bottom:2px}
+.bottom-bar .nav-item.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:32px;height:2px;background:#8B7355;border-radius:0 0 2px 2px}
+/* 结果页 */
+.result-header{background:linear-gradient(135deg,#8B7355 0%,#A0896A 50%,#8B7355 100%);color:#fff;padding:10px 12px 8px;text-align:center;border-radius:0 0 12px 12px;box-shadow:0 2px 8px rgba(139,115,85,.3)}
+.result-header .bazi-display{font-size:20px;font-family:"SimSun","宋体",serif;letter-spacing:2px;font-weight:700;margin:4px 0;line-height:1.4;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.result-header .info-row{font-size:11px;opacity:.95;margin-top:2px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;font-weight:500}
+.result-tools{display:flex;gap:6px;padding:6px 10px;background:#fff;border-bottom:1px solid #eee;overflow-x:auto;position:sticky;top:48px;z-index:40}
+.tool-btn{padding:4px 12px;border:1px solid #e8e0d0;border-radius:16px;font-size:12px;cursor:pointer;white-space:nowrap;background:#fff;color:#666;transition:all .3s;font-weight:500}
+.tool-btn:hover{background:#faf8f5;border-color:#8B7355}
+.tool-btn.active{background:linear-gradient(135deg,#8B7355,#A0896A);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(139,115,85,.3)}
+/* 四柱排盘卡片 */
+.paipan-grid{display:flex;padding:20px 12px;gap:4px;overflow-x:auto;width:100%}
+.pz-col{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1);border:1px solid #e8e0d0}
+.pz-head{width:100%;text-align:center;padding:8px 6px;font-size:12px;color:#fff;font-weight:600;letter-spacing:1px}
+.yz-hd{background:linear-gradient(135deg,#E57373,#EF9A9A)}
+.mz-hd{background:linear-gradient(135deg,#81C784,#A5D6A7)}
+.rz-hd{background:linear-gradient(135deg,#64B5F6,#90CAF9)}
+.sz-hd{background:linear-gradient(135deg,#FFB74D,#FFCC80)}
+.pz-body{width:100%;padding:10px 6px;text-align:center;min-height:140px;display:flex;flex-direction:column;justify-content:center}
+/* 四柱新样式 - 水平布局 */
+.pillar-row-new{display:flex;align-items:flex-start;justify-content:center;gap:4px;padding:6px 4px;margin:2px 0}
+.pillar-label{writing-mode:vertical-rl;text-orientation:upright;font-size:14px;font-weight:bold;color:#333;padding:4px 2px;font-family:"SimSun",serif;display:flex;align-items:center;justify-content:center;width:26px;flex-shrink:0}
+.pillar-col-new{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:46px}
+.pillar-nayin{font-size:10px;color:#666;margin-bottom:1px;font-family:"SimSun",serif}
+.pillar-shishen{font-size:11px;color:#555;margin-bottom:1px;font-family:"SimSun",serif}
+.pillar-tian-gan{font-size:20px;font-weight:bold;line-height:1.2;font-family:"SimSun",serif}
+.pillar-di-zhi{font-size:20px;font-weight:bold;line-height:1.2;margin-bottom:2px;font-family:"SimSun",serif}
+.pillar-canggan{display:flex;flex-direction:column;gap:0px;font-size:10px;color:#666;font-family:"SimSun",serif}
+.pillar-canggan-item{display:flex;align-items:center;gap:4px}
+.nayin-text{font-size:11px;color:#888;margin:6px 0;line-height:1.4;padding:0 4px}
+.shishen-text{font-size:12px;color:#E57373;margin-bottom:6px;font-weight:600;padding:4px 8px;display:inline-block}
+.tg-char{font-size:28px;font-family:"SimSun","宋体",serif;font-weight:700;line-height:1.3;margin:4px 0}
+.dz-char{font-size:28px;font-family:"SimSun","宋体",serif;font-weight:700;line-height:1.3;margin:4px 0}
+.cs-text{font-size:11px;color:#666;margin-top:6px;font-weight:500}
+@media screen and (max-width:380px){
+  .tg-char,.dz-char{font-size:22px}
+  .pz-body{min-height:120px}
+  .canggan-list{font-size:10px}
+  .ln-flow-item{font-size:11px;padding:2px 4px}
+}
+/* 扩展行：十二长生、自坐、空亡（对齐四柱） */
+.pz-extend{display:flex;padding:4px 8px;gap:2px;width:100%;align-items:center}
+.ext-label{width:32px;font-size:10px;color:#888;text-align:right;flex-shrink:0;padding-right:6px;display:flex;align-items:center;justify-content:flex-end}
+.col-w{display:flex;flex-direction:column;align-items:center;flex:1;min-width:50px;max-width:none}
+.col-w .col-label{font-size:10px;color:#888;margin-bottom:2px}
+.col-w .col-value{font-size:11px;color:#333;font-weight:500;margin-top:1px}
+.canggan-list{font-size:11px;color:#888;line-height:1.6;margin-top:4px}
+.cg-gan{font-family:"SimSun",serif}
+.cg-ss{color:#888}
+/* 五行颜色 */
+.wx-wood{color:#2E7D32}.wx-fire{color:#C62828}.wx-earth{color:#795548}.wx-metal{color:#F9A825}.wx-water{color:#1565C0}
+/* 起运信息 */
+.qiyun-info{display:flex;gap:6px;padding:8px 10px;background:#fff}
+.qiyun-info .qi-card{flex:1;padding:6px 4px;text-align:center}
+.qiyun-info .qi-label{font-size:10px;color:#888;margin-bottom:2px}
+.qiyun-info .qi-value{font-size:13px;font-weight:600;color:#333}
+/* 大运 */
+.dy-title,.ln-title{font-size:13px;font-weight:600;color:#333;padding:10px 12px 6px}
+.dy-section{margin-bottom:4px}
+.dy-section-title{font-size:12px;font-weight:600;color:#8B7355;padding:6px 10px 4px}
+.dy-grid{display:flex;gap:4px;padding:6px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* 大运+流年一体化表格布局（大运在上，流年在下竖排对齐） */
+.dy-row{display:flex;flex-direction:row;gap:2px;padding:4px 4px;width:100%;box-sizing:border-box;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.dy-col{flex:1;min-width:58px;max-width:100px;padding:4px 2px;font-size:11px;text-align:center;cursor:pointer;border-radius:0;border:none;display:flex;flex-direction:column}
+.dy-col.active{border:none;background:none}
+/* 大运内部结构 */
+.dy-col-head{padding-bottom:2px;margin-bottom:2px}
+/* 流年区域：在大运列内部下方竖排 */
+.dy-col-ln{display:flex;flex-direction:column;gap:1px;margin-top:0}
+.dy-col-ln .ln-item-s{display:flex;align-items:center;justify-content:center;gap:1px;padding:1px 1px;font-size:10px}
+.dy-col-ln .ln-tg{font-family:"SimSun","宋体",serif;font-weight:700}
+.dy-col-ln .ln-dz{font-family:"SimSun","宋体",serif;font-weight:700}
+.dy-col-pre{flex:0 0 26px;cursor:default;display:flex;flex-direction:column;align-items:center}
+.dy-year{font-size:12px;font-weight:600;color:#333}
+.dy-age{font-size:9px;color:#888;margin:1px 0}
+.dy-gz{font-size:13px;font-family:"SimSun","宋体",serif;font-weight:700;line-height:1.3}
+.dy-gz:first-of-type{margin-top:2px}
+.dy-yunqian{font-size:11px;font-weight:600;color:#8B7355;padding:1px 0}
+.xiaoyun-col{background:#f8f5f0;cursor:default}
+.xy-item{font-size:11px;line-height:1.5;padding:3px 0;border-bottom:1px solid #eee}
+.xy-item:last-child{border-bottom:none}
+.ln-col-item{cursor:default}
+.ln-gz-item{font-size:11px;line-height:1.5;padding:3px 0;border-bottom:1px solid #eee}
+.ln-gz-item:last-child{border-bottom:none}
+/* 十二长生 */
+.szcs-title{font-size:13px;font-weight:600;color:#333;padding:12px 16px 6px}
+.szcs-table{width:100%;border-collapse:collapse;font-size:12px;margin:0 16px;width:calc(100% - 32px)}
+.szcs-table th{color:#888;font-weight:500;padding:8px 6px;text-align:center}
+.szcs-table td{padding:7px 6px;text-align:center}
+.szcs-name{font-family:"SimSun",serif;font-weight:600}
+/* 用户菜单 */
+.user-menu{position:fixed;top:48px;right:12px;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:200;min-width:180px;padding:6px 0;display:none}
+.user-menu.show{display:block}
+.user-menu-item{padding:10px 16px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:8px;color:#333}
+.user-menu-item:active{background:#f5f5f5}
+.user-menu-item.danger{color:#F44336}
+/* 历史记录 */
+.history-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f5f5f5;align-items:center}
+.history-item:last-child{border-bottom:none}
+.history-avatar{width:40px;height:40px;border-radius:50%;background:#faf8f5;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.history-actions{display:flex;gap:6px;margin-top:6px}
+.history-btn{padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;border:none;transition:all .2s}
+.btn-view{background:#f0f0f0;color:#666}
+.btn-del{background:#fff;color:#F44336;border:1px solid #F44336}
+.history-empty{padding:40px;text-align:center;color:#bbb;font-size:14px}
+/* Toast */
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;display:none;z-index:999;white-space:nowrap}
+/* 我的收藏 - CSS moved to auth block above */
+/* 子时提示 */
+.time-note{font-size:11px;color:#888;margin-top:6px;padding:0 2px}
+
+
+/* 藏干 */
+.canggan-list{font-size:11px;color:#888;line-height:1.2}
+/* 十二长生单字 */
+.cs-text{font-size:11px;color:#888;margin-top:2px}
+
+.ln-col{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+.ln-item{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:#FFF9E6;border-radius:4px;font-size:13px}
+.ln-item.active{background:#FFE4B5}
+.ln-gz{font-family:"SimSun","宋体",serif;font-weight:600;letter-spacing:1px}
+.ln-age{font-size:11px;color:#888}
+
+/* 八字反推弹窗 */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:center;justify-content:center}
+.modal-content{background:#fff;border-radius:16px;width:90%;max-width:400px;max-height:80vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #eee}
+.modal-title{font-size:16px;font-weight:600}
+.modal-close{font-size:24px;cursor:pointer;color:#888;padding:4px}
+.modal-body{padding:16px}
+.bazi-reverse-grid{display:flex;gap:8px;margin-bottom:16px}
+.bazi-reverse-col{flex:1;text-align:center}
+.bazi-reverse-label{font-size:12px;color:#888;margin-bottom:6px}
+.bazi-reverse-select{width:100%;height:40px;border:1px solid #e8e8e8;border-radius:8px;padding:0 8px;font-size:14px;font-family:"SimSun",serif;text-align:center}
+.bazi-reverse-options{display:flex;gap:10px;margin-bottom:16px}
+.reverse-results{margin-top:16px;border-top:1px solid #eee;padding-top:16px}
+.reverse-results-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.result-list{max-height:200px;overflow-y:auto}
+.result-item{padding:12px;background:#faf8f5;border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.result-item:hover{background:#FFF9E6}
+.result-item:last-child{margin-bottom:0}
+.result-date{font-size:14px;font-weight:600;color:#333}
+.result-time{font-size:12px;color:#888;margin-top:4px}
+/* 八字反推分开选择 */
+.reverse-bazi-row{display:flex;gap:10px;margin-bottom:8px}
+.rb-col{flex:1}
+.rb-label{font-size:12px;color:#888;margin-bottom:4px;text-align:center}
+.rb-pair{display:flex;gap:4px}
+.rb-select{flex:1;height:38px;border:1px solid #e8e8e8;border-radius:6px;padding:0 4px;font-size:14px;font-family:"SimSun",serif;text-align:center;background:#fff}
+.rb-select:focus{border-color:#8B7355}
+/* 八字反推竖排 */
+.rb-zhubiao{padding:8px 0}
+.rb-item{margin-bottom:12px}
+.rb-item:last-child{margin-bottom:0}
+.rb-label{font-size:12px;color:#888;margin-bottom:6px}
+.rb-pair{display:flex;gap:8px}
+.rb-pair select{width:50%;height:42px;border:1px solid #e8e8e8;border-radius:8px;padding:0 8px;font-size:15px;font-family:"SimSun",serif;text-align:center;background:#fff}
+
+/* 登录注册弹窗 */
+.auth-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:center;justify-content:center}
+.auth-modal.hidden{display:none}
+.auth-box{background:#fff;border-radius:16px;width:88%;max-width:380px;padding:28px 24px 20px;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.auth-title{font-size:20px;font-weight:700;text-align:center;margin-bottom:20px;color:#333}
+.auth-tab{display:flex;gap:0;background:#f5f5f5;border-radius:8px;padding:3px;margin-bottom:20px}
+.auth-tab-btn{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:14px;cursor:pointer;color:#888;border:none;background:none;transition:all .2s}
+.auth-tab-btn.active{background:#fff;color:#8B7355;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.auth-field{margin-bottom:14px}
+.auth-label{display:block;font-size:12px;color:#888;margin-bottom:4px}
+.auth-input{width:100%;height:42px;border:1px solid #e8e8e8;border-radius:8px;padding:0 12px;font-size:14px;outline:none}
+.auth-input:focus{border-color:#8B7355}
+.auth-submit{width:100%;height:44px;background:linear-gradient(135deg,#8B7355,#A0896A);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
+.auth-submit:active{transform:scale(.98)}
+.auth-close{position:absolute;top:12px;right:16px;font-size:22px;cursor:pointer;color:#999;background:none;border:none}
+.auth-error{color:#F44336;font-size:12px;margin-top:6px;text-align:center;display:none}
+.auth-hint{text-align:center;margin-top:12px;font-size:13px;color:#999}
+.profile-card{border-radius:12px;padding:20px;text-align:center;color:#fff;margin-bottom:12px}
+.profile-avatar{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.2);display:inline-flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:10px}
+.profile-name{font-size:18px;font-weight:700}
+.profile-desc{font-size:12px;opacity:.8;margin-top:4px}
+.stats-row{display:flex;gap:8px;margin-top:12px}
+.stat-item{flex:1;background:rgba(255,255,255,.15);border-radius:8px;padding:8px;text-align:center}
+.stat-num{font-size:20px;font-weight:700}.stat-label{font-size:11px;opacity:.8;margin-top:2px}
+.logout-btn{width:100%;height:40px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;font-size:14px;cursor:pointer;margin-top:10px}
+.sync-status{font-size:11px;color:rgba(255,255,255,.6);margin-top:6px}
+
+/* 当前岁数字 */
+.current-age{display:inline-block;background:linear-gradient(135deg,#8B7355,#A0896A);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-top:4px;font-weight:600}
+/* 当前大运高亮 */
+.dy-col.current-dy{background:#f5f5f5 !important;border-radius:6px}
+/* 当前流年高亮 */
+.ln-item-s.current-ln{background:#e8e8e8 !important;border-radius:4px}
+
+/* 全局布局修复 */
+html, body { overflow-x: hidden; }
+#pResult { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+/* 确保大运流年区域可横向滚动 */
+.dy-section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="back" onclick="goBack()">←</div>
+  <div class="title">阆风八字</div>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+</div>
+<div id="userMenu" class="user-menu">
+  <div class="user-menu-item" onclick="swTab('profile')">👤 个人中心</div>
+  <div class="user-menu-item" onclick="swTab('history')">📅 排盘记录</div>
+</div>
+
+<div id="pInput" class="page">
+  <div class="logo-area">
+    <div class="logo-icon">☠</div>
+    <div class="logo-title">阆风八字</div>
+    <div class="logo-desc">精准命盘 · 详尽解读</div>
+  </div>
+  <div class="container">
+    <div class="card">
+      <!-- 日历类型单选：阳历/农历/八字反推 -->
+      <div class="cal-switch">
+        <button class="cal-btn active" id="btnSolar" onclick="switchCal('solar')">阳历</button>
+        <button class="cal-btn" id="btnLunar" onclick="switchCal('lunar')">农历</button>
+        <button class="cal-btn" id="btnReverse" onclick="switchCal('reverse')">八字反推</button>
+      </div>
+
+      <!-- 阳历输入 -->
+      <div id="solarInput">
+        <div class="input-row">
+          <div class="input-group">
+            <label class="input-label">出生日期</label>
+            <input type="date" id="sd" class="input-full">
+          </div>
+          <div class="input-group">
+            <label class="input-label">出生时间</label>
+            <input type="time" id="st" class="input-full" value="12:00">
+          </div>
+        </div>
+      </div>
+
+      <!-- 农历输入 -->
+      <div id="lunarInput" class="hidden">
+        <div class="input-row">
+          <div class="input-group">
+            <label class="input-label">农历年</label>
+            <select id="lny" class="input-full"></select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">农历月</label>
+            <select id="lnm" class="input-full"></select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">农历日</label>
+            <select id="lnd" class="input-full"></select>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label class="input-label">时辰</label>
+            <select id="lnh" class="input-full"></select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">闰月</label>
+            <select id="lnleap" class="input-full">
+              <option value="0">否</option>
+              <option value="1">是</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 八字反推输入 -->
+      <div id="reverseInput" class="hidden">
+        <div class="rb-zhubiao">
+          <div class="rb-item">
+            <div class="rb-label">年柱</div>
+            <div class="rb-pair">
+              <select id="revYTg" class="rb-select"></select>
+              <select id="revYDz" class="rb-select"></select>
+            </div>
+          </div>
+          <div class="rb-item">
+            <div class="rb-label">月柱</div>
+            <div class="rb-pair">
+              <select id="revMTg" class="rb-select"></select>
+              <select id="revMDz" class="rb-select"></select>
+            </div>
+          </div>
+          <div class="rb-item">
+            <div class="rb-label">日柱</div>
+            <div class="rb-pair">
+              <select id="revDTg" class="rb-select"></select>
+              <select id="revDDz" class="rb-select"></select>
+            </div>
+          </div>
+          <div class="rb-item">
+            <div class="rb-label">时柱</div>
+            <div class="rb-pair">
+              <select id="revHTg" class="rb-select"></select>
+              <select id="revHDz" class="rb-select"></select>
+            </div>
+          </div>
+        </div>
+        <div class="input-row" style="margin-top:12px">
+          <div class="input-group">
+            <label class="input-label">起始年份</label>
+            <select id="revStartYear" class="input-full"></select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">查找范围</label>
+            <select id="revRange" class="input-full">
+              <option value="1">1个甲子</option>
+              <option value="2">2个甲子</option>
+              <option value="3" selected>3个甲子</option>
+              <option value="5">5个甲子</option>
+            </select>
+          </div>
+        </div>
+        <div id="reverseResults" class="hidden" style="margin-top:10px;max-height:200px;overflow-y:auto;background:#f5f5f5;border-radius:4px;padding:10px;">
+          <div style="font-size:12px;color:#666;margin-bottom:8px;">匹配时间 <span id="resultCount"></span></div>
+          <div id="resultList"></div>
+        </div>
+      </div>
+
+      <!-- 性别 -->
+      <div class="gender-row">
+        <label class="gender-option active" onclick="selectGender(this,1)">
+          <input type="radio" name="gd" id="gd1" value="1" checked> ♂ 男
+        </label>
+        <label class="gender-option" onclick="selectGender(this,2)">
+          <input type="radio" name="gd" id="gd2" value="2"> ♀ 女
+        </label>
+      </div>
+      <select id="gd" class="hidden"><option value="1">男</option><option value="2">女</option></select>
+
+      <!-- 备注名 -->
+      <div class="input-row" style="margin-top:10px">
+        <div class="input-group">
+          <label class="input-label">备注名（选填）</label>
+          <input type="text" id="rk" class="input-full" placeholder="如：张三">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" id="btnGo" onclick="runCurrentMode()">开始排盘</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 输入页底部导航 -->
+<div class="bottom-bar input-page-bar">
+  <div class="nav-item active" data-page="input" onclick="swTab('input')"><span class="nav-icon">📊</span>排盘</div>
+  <div class="nav-item" data-page="result" onclick="swTab('result')"><span class="nav-icon">📄</span>命盘</div>
+  <div class="nav-item" data-page="history" onclick="swTab('history')"><span class="nav-icon">📅</span>记录</div>
+  <div class="nav-item" data-page="profile" onclick="swTab('profile')"><span class="nav-icon">👤</span>个人</div>
+</div>
+
+<!-- 结果页 -->
+<div id="pResult" class="page hidden">
+  <div class="result-header">
+    <div class="bazi-display" id="baziDisplay">-- -- -- --</div>
+    <div class="info-row">
+      <span id="dSolar"></span>
+      <span id="dLunar"></span>
+    </div>
+  </div>
+  <div class="result-tools">
+    <button class="tool-btn" id="favBtn" onclick="toggleFav()">收藏</button>
+    <button class="tool-btn" onclick="swTab('input')">← 重新排盘</button>
+  </div>
+  <div class="pillar-row-new" id="paipanGrid">
+    <div class="pillar-label" id="pillarLabel">乾造</div>
+    <div class="pillar-col-new" id="cYz"></div>
+    <div class="pillar-col-new" id="cMz"></div>
+    <div class="pillar-col-new" id="cRz"></div>
+    <div class="pillar-col-new" id="cSz"></div>
+  </div>
+
+  <!-- 大运流年 -->
+  <div class="card">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>大运流年</span>
+      <span id="currentAgeBadge" style="font-size:12px;color:#8B7355;font-weight:600;"></span>
+    </div>
+    <div id="dayunArea"></div>
+  </div>
+  
+
+</div>
+
+<!-- 结果页底部导航 -->
+<div id="resultBottomBar" class="bottom-bar" style="display:none;">
+  <div class="nav-item" data-page="input" onclick="swTab('input')"><span class="nav-icon">📊</span>排盘</div>
+  <div class="nav-item active" data-page="result" onclick="swTab('result')"><span class="nav-icon">📄</span>命盘</div>
+  <div class="nav-item" data-page="history" onclick="swTab('history')"><span class="nav-icon">📅</span>记录</div>
+  <div class="nav-item" data-page="profile" onclick="swTab('profile')"><span class="nav-icon">👤</span>个人</div>
+</div>
+
+<!-- 记录页 -->
+<div id="pHistory" class="page hidden">
+  <div class="top-bar">
+    <div class="back" onclick="swTab('input')">←</div>
+    <div class="title">排盘记录</div>
+  </div>
+  <div class="container">
+    <div class="tab-switch" style="display:flex;border-bottom:1px solid #eee;margin-bottom:10px;">
+      <div id="histTabBtn" class="tab-btn active" onclick="switchHistTab('hist')" style="flex:1;padding:10px;text-align:center;cursor:pointer;border-bottom:2px solid #4CAF50;">记录</div>
+      <div id="favTabBtn" class="tab-btn" onclick="switchHistTab('fav')" style="flex:1;padding:10px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;">收藏</div>
+    </div>
+    <div class="card">
+      <div id="histList"></div>
+      <div id="favList" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 个人页 -->
+<div id="pProfile" class="page hidden">
+  <div class="top-bar">
+    <div class="back" onclick="swTab('input')">←</div>
+    <div class="title">个人中心</div>
+  </div>
+  <div class="container">
+    <div class="card">
+      <div id="profileLoggedOut">
+        <div class="profile-card" style="background:linear-gradient(135deg,#8B7355,#A0896A);">
+          <div class="profile-avatar">👤</div>
+          <div class="profile-name">未登录</div>
+          <div class="profile-desc">登录后可云端同步排盘记录</div>
+        </div>
+        <div style="padding:16px;">
+          <button class="auth-submit" onclick="openAuth('login')">登录 / 注册</button>
+        </div>
+      </div>
+      <div id="profileLoggedIn" class="hidden">
+        <div class="profile-card" style="background:linear-gradient(135deg,#8B7355,#A0896A);">
+          <div class="profile-avatar">👤</div>
+          <div class="profile-name" id="profileName">--</div>
+          <div class="profile-desc" id="profileSyncInfo">云端同步已开启</div>
+          <div class="sync-status" id="syncStatus"></div>
+        </div>
+        <div class="stats-row" style="margin-top:12px;">
+          <div class="stat-item"><span class="stat-num" id="statFav">0</span><span class="stat-label">收藏</span></div>
+          <div class="stat-item"><span class="stat-num" id="statRec">0</span><span class="stat-label">记录</span></div>
+          <div class="stat-item"><span class="stat-num" id="statDays">0</span><span class="stat-label">天数</span></div>
+        </div>
+      </div>
+      <!-- 易学图书馆入口 -->
+      <div style="margin-top:12px;padding:0 4px;">
+        <a href="https://yxwz.lfyx.cc.cd" target="_blank" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-radius:10px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid #f0ece4;">
+          <span style="font-size:24px;">📚</span>
+          <div style="flex:1;">
+            <div style="font-size:15px;font-weight:600;color:#333;">易学图书馆</div>
+            <div style="font-size:12px;color:#888;margin-top:2px;">探索易学经典与资料</div>
+          </div>
+          <span style="font-size:18px;color:#ccc;">›</span>
+        </a>
+      </div>
+    </div>
+    <!-- 退出登录按钮 -->
+    <div id="logoutArea" class="hidden" style="margin-top:20px;padding:0 16px;">
+      <button onclick="doLogout()" style="width:100%;height:48px;background:#fff;border:1px solid #e8e8e8;border-radius:10px;font-size:15px;color:#666;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05);">退出登录</button>
+    </div>
+  </div>
+</div>
+
+<!-- 登录注册弹窗 -->
+<div id="authModal" class="auth-modal hidden">
+  <div class="auth-box" style="position:relative;">
+    <button class="auth-close" onclick="closeAuth()">×</button>
+    <div class="auth-title">阆风八字</div>
+    <div class="auth-tab">
+      <button class="auth-tab-btn active" id="authTabLogin" onclick="switchAuthTab('login')">登录</button>
+      <button class="auth-tab-btn" id="authTabReg" onclick="switchAuthTab('register')">注册</button>
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">用户名</label>
+      <input type="text" id="authUser" class="auth-input" placeholder="请输入手机号" inputmode="numeric" pattern="[0-9]*" maxlength="11" autocomplete="username">
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">密码</label>
+      <input type="password" id="authPass" class="auth-input" placeholder="请输入密码" autocomplete="current-password">
+    </div>
+    <div class="auth-field hidden" id="authEmailRow">
+      <label class="auth-label">邮箱</label>
+      <input type="email" id="authEmail" class="auth-input" placeholder="请输入邮箱（用于找回密码）" autocomplete="email">
+    </div>
+    <div class="auth-field hidden" id="authCodeRow">
+      <label class="auth-label">验证码</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="authCode" class="auth-input" placeholder="请输入验证码" maxlength="6" style="flex:1">
+        <button type="button" id="sendCodeBtn" class="btn-secondary" onclick="sendVerifyCode()" style="white-space:nowrap;padding:8px 12px;font-size:13px">获取验证码</button>
+      </div>
+    </div>
+    <div class="auth-field hidden" id="authConfirmRow">
+      <label class="auth-label">确认密码</label>
+      <input type="password" id="authPassConfirm" class="auth-input" placeholder="请再次输入密码" autocomplete="new-password">
+    </div>
+    <div class="auth-error" id="authError"></div>
+    <button class="auth-submit" id="authSubmitBtn" onclick="doAuth()">登录</button>
+    <div class="auth-hint" id="authHint">还没有账号？<a href="javascript:void(0)" onclick="switchAuthTab('register')" style="color:#8B7355">去注册</a></div>
+
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- 底部导航(记录/个人页用) -->
+<div id="mainBottomBar" class="bottom-bar" style="display:none;">
+  <div class="nav-item active" data-page="input" onclick="swTab('input')"><span class="nav-icon">📊</span>排盘</div>
+  <div class="nav-item" data-page="result" onclick="swTab('result')"><span class="nav-icon">📄</span>命盘</div>
+  <div class="nav-item" data-page="history" onclick="swTab('history')"><span class="nav-icon">📅</span>记录</div>
+  <div class="nav-item" data-page="profile" onclick="swTab('profile')"><span class="nav-icon">👤</span>个人</div>
+</div>
+
+<script src="js/paipan.js"></script>
+<script>
+var p = new paipan();
+var R = null;
+var currentCal = 'solar';
+var favorites = [];
+var records = [];
+var currentUser = null;
+var selectedDyIndex = 0;
+
+try { favorites = JSON.parse(localStorage.getItem('bazi_favs') || '[]'); } catch(e) {}
+// 记录只从云端获取，不读本地
+try { currentUser = JSON.parse(localStorage.getItem('bazi_user') || 'null'); } catch(e) {}
+
+// 初始化
+document.getElementById('sd').value = new Date().toISOString().split('T')[0];
+initLunarSelects();
+updateProfile();
+
+// 立即调用 switchCal
+switchCal('solar');
+
+// 如果已登录，自动同步云端记录
+if(authToken && currentUser) {
+  syncCloudRecords();
+}
+
+function initLunarSelects() {
+  var ySel = document.getElementById('lny');
+  var mSel = document.getElementById('lnm');
+  var dSel = document.getElementById('lnd');
+  var hSel = document.getElementById('lnh');
+
+  for(var y = 2100; y >= 1900; y--) {
+    var opt = document.createElement('option');
+    opt.value = y; opt.textContent = y + '年';
+    ySel.appendChild(opt);
+  }
+  ySel.value = 2000;
+
+  var lmonths = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
+  for(var m = 1; m <= 12; m++) {
+    var opt = document.createElement('option');
+    opt.value = m; opt.textContent = lmonths[m-1] + '月';
+    mSel.appendChild(opt);
+  }
+
+  var ldays = ['初一','初二','初三','初四','初五','初六','初七','初八','初九','初十',
+               '十一','十二','十三','十四','十五','十六','十七','十八','十九','二十',
+               '廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+  for(var d = 1; d <= 30; d++) {
+    var opt = document.createElement('option');
+    opt.value = d; opt.textContent = ldays[d-1];
+    dSel.appendChild(opt);
+  }
+
+  var hnames = ['子时(23-1点)','丑时(1-3点)','寅时(3-5点)','卯时(5-7点)',
+                '辰时(7-9点)','巳时(9-11点)','午时(11-13点)','未时(13-15点)',
+                '申时(15-17点)','酉时(17-19点)','戌时(19-21点)','亥时(21-23点)'];
+  for(var h = 0; h < 12; h++) {
+    var opt = document.createElement('option');
+    opt.value = h; opt.textContent = hnames[h];
+    hSel.appendChild(opt);
+  }
+}
+
+function switchCal(cal) {
+  currentCal = cal;
+  document.querySelectorAll('.cal-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('btn' + cal.charAt(0).toUpperCase() + cal.slice(1)).classList.add('active');
+  document.getElementById('solarInput').classList.toggle('hidden', cal !== 'solar');
+  document.getElementById('lunarInput').classList.toggle('hidden', cal !== 'lunar');
+  document.getElementById('reverseInput').classList.toggle('hidden', cal !== 'reverse');
+  
+  if(cal === 'reverse') {
+    initReverseSelects();
+    document.getElementById('btnGo').textContent = '开始反推';
+  } else {
+    document.getElementById('btnGo').textContent = '开始排盘';
+  }
+  
+  var genderEl = document.getElementById('gd');
+  if(genderEl) genderEl.value = document.querySelector('input[name="gd"]:checked').value;
+}
+
+function initReverseSelects() {
+  // 天干
+  var tgIds = ['revYTg', 'revMTg', 'revDTg', 'revHTg'];
+  tgIds.forEach(function(id) {
+    var sel = document.getElementById(id);
+    if(!sel || sel.options.length > 0) return;
+    p.ctg.forEach(function(t, i) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = t;
+      sel.appendChild(opt);
+    });
+  });
+  
+  // 地支
+  var dzIds = ['revYDz', 'revMDz', 'revDDz', 'revHDz'];
+  dzIds.forEach(function(id) {
+    var sel = document.getElementById(id);
+    if(!sel || sel.options.length > 0) return;
+    p.cdz.forEach(function(d, i) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = d;
+      sel.appendChild(opt);
+    });
+  });
+  
+  // 起始年份从1906开始
+  var yearSel = document.getElementById('revStartYear');
+  if(yearSel && yearSel.options.length === 0) {
+    for(var y = 2026; y >= 1906; y--) {
+      var opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y + '年';
+      yearSel.appendChild(opt);
+    }
+    yearSel.value = 1906;
+  }
+}
+
+function selectGender(el, val) {
+  document.querySelectorAll('.gender-option').forEach(function(x){ x.classList.remove('active'); });
+  el.classList.add('active');
+  el.querySelector('input').checked = true;
+  document.getElementById('gd').value = val;
+}
+
+function runCurrentMode() {
+  console.log('runCurrentMode called, currentCal=' + currentCal);
+  if(currentCal === 'solar') runPaipanSolar();
+  else if(currentCal === 'lunar') runPaipanLunar();
+  else if(currentCal === 'reverse') runBaziReverse();
+}
+
+function runBaziReverse() {
+  var yt = parseInt(document.getElementById('revYTg').value);
+  var yz = parseInt(document.getElementById('revYDz').value);
+  var mt = parseInt(document.getElementById('revMTg').value);
+  var mz = parseInt(document.getElementById('revMDz').value);
+  var dt = parseInt(document.getElementById('revDTg').value);
+  var dz = parseInt(document.getElementById('revDDz').value);
+  var ht = parseInt(document.getElementById('revHTg').value);
+  var hz = parseInt(document.getElementById('revHDz').value);
+  var startYear = parseInt(document.getElementById('revStartYear').value);
+  var range = parseInt(document.getElementById('revRange').value);
+  
+  // 转换年/月/日/时干支为60甲子索引
+  // 六十甲子: (天干index * 6 + 地支index) 对某些组合有效
+  // 更准确: 遍历六十甲子找匹配的
+  var findGzIdx = function(tg, dz) {
+    for(var i = 0; i < 60; i++) {
+      if(p.gz[i] === p.ctg[tg] + p.cdz[dz]) return i;
+    }
+    return -1;
+  };
+  
+  var ytg = findGzIdx(yt, yz);
+  var mtg = findGzIdx(mt, mz);
+  var dtg = findGzIdx(dt, dz);
+  var htg = findGzIdx(ht, hz);
+  
+  if(ytg < 0 || mtg < 0 || dtg < 0 || htg < 0) {
+    showToast('选择的干支组合无效');
+    return;
+  }
+  
+  var results = p.gz2gl(ytg, mtg, dtg, htg, startYear - 60 * (range - 1), range);
+  
+  if(!results || results.length === 0) {
+    showToast('未找到匹配时间');
+    return;
+  }
+  
+  var listEl = document.getElementById('resultList');
+  var h = '';
+  results.forEach(function(r, i) {
+    var start = r[0];
+    var end = r[1];
+    var startDate = start[0] + '-' + String(start[1]).padStart(2,'0') + '-' + String(start[2]).padStart(2,'0');
+    var startTime = String(start[3]).padStart(2,'0') + ':' + String(start[4]).padStart(2,'0');
+    var endTime = String(end[3]).padStart(2,'0') + ':' + String(end[4]).padStart(2,'0');
+    
+    h += '<div class="result-item" onclick="selectReverseTime(' + start[0] + ',' + start[1] + ',' + start[2] + ',' + start[3] + ',' + start[4] + ',\'' + startDate + '\',\'' + startTime + '\')">';
+    h += '<div class="result-date">' + startDate + '</div>';
+    h += '<div class="result-time">' + startTime + ' - ' + endTime + '</div>';
+    h += '</div>';
+  });
+  
+  listEl.innerHTML = h;
+  document.getElementById('resultCount').textContent = '(' + results.length + '条)';
+  document.getElementById('reverseResults').classList.remove('hidden');
+}
+
+function selectReverseTime(yy, mm, dd, hh, mt, sd, st) {
+  var gd = parseInt(document.getElementById('gd').value) || 1;
+  doPaipan(gd, yy, mm, dd, hh, mt, '反推命盘', sd, st);
+}
+
+function runPaipanSolar() {
+  var sd = document.getElementById('sd').value;
+  var st = document.getElementById('st').value;
+  var gd = parseInt(document.getElementById('gd').value);
+  var rk = document.getElementById('rk').value.trim();
+  if(!sd) { showToast('请选择出生日期'); return; }
+  try {
+    var p1 = sd.split('-'), p2 = st.split(':');
+    R = p.fatemaps(gd, parseInt(p1[0]), parseInt(p1[1]), parseInt(p1[2]), parseInt(p2[0]), parseInt(p2[1]), 0);
+    if(!R) { showToast('排盘失败'); return; }
+    R._remark = rk || '命盘';
+    R._gender = gd;
+    R._solarDate = sd;
+    R._solarTime = st;
+    saveRec(R);
+    selectedDyIndex = 0;
+    renderAll();
+    updateFavBtn();
+    swTab('result');
+  } catch(e) {
+    showToast('排盘出错: ' + e.message);
+  }
+}
+
+function runPaipanLunar() {
+  var lny = parseInt(document.getElementById('lny').value);
+  var lnm = parseInt(document.getElementById('lnm').value);
+  var lnd = parseInt(document.getElementById('lnd').value);
+  var lnh = parseInt(document.getElementById('lnh').value);
+  var lnleap = parseInt(document.getElementById('lnleap').value);
+  var gd = parseInt(document.getElementById('gd').value);
+  var rk = document.getElementById('rk').value.trim();
+  try {
+    var solar = p.Lunar2Solar(lny, lnm, lnd, lnleap);
+    if(!solar) { showToast('农历日期无效'); return; }
+    var yy = solar[0], mm = solar[1], dd = solar[2];
+    var hh = lnh === 0 ? 0 : (lnh * 2 - 1);
+    doPaipan(gd, yy, mm, dd, hh, 0, rk, yy + '-' + mm + '-' + dd, hh + ':00');
+  } catch(e) { showToast('农历转换失败: ' + e.message); }
+}
+
+function doPaipan(gd, yy, mm, dd, hh, mt, rk, sd, st) {
+  try {
+    R = p.fatemaps(gd, yy, mm, dd, hh, mt, 0);
+  } catch(e) {
+    showToast('排盘出错: ' + e.message);
+    console.error(e);
+    return;
+  }
+  if(!R) { showToast('排盘失败'); return; }
+  R._remark = rk || '命盘';
+  R._gender = gd;
+  R._solarDate = sd;
+  R._solarTime = st;
+  saveRec(R);
+  selectedDyIndex = 0;
+  renderAll();
+  updateFavBtn();
+  swTab('result');
+}
+
+function saveRec(r) {
+  var isMale = r._gender === 1;
+  var label = (isMale ? '乾造' : '坤造') + r._remark;
+  var same = records.find(function(x) { return x.name === label && x.solarDate === r._solarDate && x.solarTime === r._solarTime; });
+  if(same) return;
+  // 只保存到云端，不存本地
+  saveRecToCloud(r);
+}
+
+function renderAll() {
+  if(!R) return;
+  var tg = R['tg'], dz = R['dz'];
+  var riGan = tg[2];
+
+  document.getElementById('baziDisplay').textContent = 
+    p.ctg[tg[0]] + p.cdz[dz[0]] + ' ' +
+    p.ctg[tg[1]] + p.cdz[dz[1]] + ' ' +
+    p.ctg[tg[2]] + p.cdz[dz[2]] + ' ' +
+    p.ctg[tg[3]] + p.cdz[dz[3]];
+
+  var gl = R['gl'] || [];
+  document.getElementById('dSolar').textContent = '阳历' + (gl[0]||'') + '年' + (gl[1]||'') + '月' + (gl[2]||'') + '日';
+
+  var nl = R['nl'] || [];
+  if(nl.length >= 3) {
+    document.getElementById('dLunar').textContent = '农历' + (nl[0]||'') + '年' + (nl[3]?'闰':'') + (nl[1]||'') + '月' + (nl[2]||'') + '日';
+  }
+
+  // 更新乾造/坤造标签
+  var isMale = R._gender === 1;
+  document.getElementById('pillarLabel').textContent = (isMale ? '乾造' : '坤造');
+  
+  renderCol('cYz', tg[0], dz[0], false);
+  renderCol('cMz', tg[1], dz[1], false);
+  renderCol('cRz', tg[2], dz[2], true, R._gender);
+  renderCol('cSz', tg[3], dz[3], false);
+
+  renderExtend();
+  renderDayun();
+}
+
+function renderCol(cid, gi, zi, isRi, gender) {
+  var riGan = R['tg'][2];
+  var ssIdx = p.dgs[gi][riGan];
+  var ss = p.ssq[ssIdx] || '';
+  
+  // 计算纳音
+  var gzIdx = Math.floor((gi - zi + 12) % 12 / 2) * 10 + gi;
+  var nayin = p.cna[gzIdx] || '';
+
+  var h = '';
+  // 纳音（最上方）
+  h += '<div class="pillar-nayin">' + nayin + '</div>';
+  // 十神
+  h += '<div class="pillar-shishen">' + (isRi ? '日干' : ss) + '</div>';
+  // 天干（大字）
+  h += '<div class="pillar-tian-gan ' + getWxClass(gi) + '">' + p.ctg[gi] + '</div>';
+  // 地支（大字）
+  h += '<div class="pillar-di-zhi ' + getWxClass(null, zi) + '">' + p.cdz[zi] + '</div>';
+  // 藏干列表
+  h += '<div class="pillar-canggan">';
+  for(var j = 0; j < 3; j++) {
+    var nz = p.zcg[zi][j];
+    if(nz >= 0) {
+      var cssIdx = p.dgs[nz][riGan];
+      h += '<div class="pillar-canggan-item">';
+      h += '<span class="cg-gan ' + getWxClass(nz) + '">' + p.ctg[nz] + '</span>';
+      h += '<span class="cg-ss">' + p.ssq[cssIdx] + '</span>';
+      h += '</div>';
+    }
+  }
+  h += '</div>';
+
+  document.getElementById(cid).innerHTML = h;
+}
+
+var CSNAMES = ['长生','沐浴','冠带','临官','帝旺','衰','病','死','墓','绝','胎','养'];
+
+function calcSzs(riGan, dzIdx) {
+  var SZS_CODE = [1, 6, 10, 9, 10, 9, 7, 0, 4, 3];
+  return (24 + SZS_CODE[riGan] + (riGan % 2 === 0 ? 1 : -1) * dzIdx) % 12;
+}
+
+function getTgWx(i) {
+  if(i===0||i===1) return 'wood';
+  if(i===2||i===3) return 'fire';
+  if(i===4||i===5) return 'earth';
+  if(i===6||i===7) return 'metal';
+  return 'water';
+}
+
+function getDzWx(i) {
+  if(i===2||i===3) return 'wood';
+  if(i===5||i===6) return 'fire';
+  if(i===4||i===10||i===1||i===7) return 'earth';
+  if(i===8||i===9) return 'metal';
+  return 'water';
+}
+
+function getWxClass(gi, zi) {
+  if(gi !== undefined && gi !== null) return 'wx-' + getTgWx(gi);
+  return 'wx-' + getDzWx(zi);
+}
+
+function renderDayun() {
+  var container = document.getElementById('dayunArea');
+  if(!R || !R['dy']) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:#999;">暂无大运数据</div>';
+    return;
+  }
+  var dy = R['dy'];
+  var riGan = R['tg'][2];
+  var birthYear = R['gl'] ? R['gl'][0] : 0;
+  var birthMonth = R['gl'] ? R['gl'][1] : 1;
+  var birthDay = R['gl'] ? R['gl'][2] : 1;
+  var h = '';
+
+  // 计算当前年龄（周岁）
+  var now = new Date();
+  var currentYear = now.getFullYear();
+  var currentAge = currentYear - birthYear;
+  if (now.getMonth() + 1 < birthMonth || (now.getMonth() + 1 === birthMonth && now.getDate() < birthDay)) {
+    currentAge--;
+  }
+
+  // 找到当前所处的大运索引
+  var currentDyIndex = -1;
+  for(var i = 0; i < dy.length; i++) {
+    if(dy[i] && currentAge >= dy[i]['zqage'] && currentAge <= dy[i]['zboz']) {
+      currentDyIndex = i;
+      break;
+    }
+  }
+
+  // 运前岁数
+  var preAge = 0;
+  if(dy[0] && dy[0]['zqage']) {
+    preAge = dy[0]['zqage'] - 1;
+  }
+
+  // ─── 大运+流年一体化表格 ──
+  h += '<div class="dy-section"><div class="dy-row">';
+
+  // 运前列（含运前流年）
+  if(preAge > 0) {
+    var preStartYear = birthYear;
+    h += '<div class="dy-col dy-col-pre' + (currentAge <= preAge ? ' current-dy' : '') + '">';
+    h += '<div class="dy-col-ln">';
+    h += '<div class="dy-yunqian">运前</div>';
+    for(var a2 = 1; a2 <= preAge; a2++) {
+      var lyTg = (R['tg'][0] + (a2 - 1) + 100) % 10;
+      var lyDz = (R['dz'][0] + (a2 - 1) + 120) % 12;
+      var lyTgWx = getTgWx(lyTg), lyDzWx = getDzWx(lyDz);
+      var isCurrentLn = (preStartYear + a2 - 1) === currentYear;
+      h += '<div class="ln-item-s' + (isCurrentLn ? ' current-ln' : '') + '"><span class="ln-tg wx-' + lyTgWx + '">' + p.ctg[lyTg] + '</span><span class="ln-dz wx-' + lyDzWx + '">' + p.cdz[lyDz] + '</span></div>';
+    }
+    h += '</div></div>';
+  }
+
+  // 每个大运列（含该大运的流年竖排在下方）
+  for(var i = 0; i < dy.length; i++) {
+    var d = dy[i];
+    if(!d) continue;
+    var tgIdx = d['zfman'], dzIdx = d['zfmbn'];
+    var startAge = d['zqage'], endAge = d['zboz'];
+    var startYear = birthYear + startAge - 1;
+    var tgSs = p.sss[p.dgs[tgIdx][riGan]];
+    var dzSs = p.sss[p.dzs[dzIdx][riGan]];
+    var tgWx = getTgWx(tgIdx), dzWx = getDzWx(dzIdx);
+    var isCurrentDy = (i === currentDyIndex);
+    h += '<div class="dy-col' + (i===selectedDyIndex?' active':'') + (isCurrentDy ? ' current-dy' : '') + '" onclick="selectDayun(' + i + ')">';
+    // 大运头部
+    h += '<div class="dy-col-head">';
+    h += '<div class="dy-year">' + startYear + '</div>';
+    h += '<div class="dy-age">' + startAge + '-' + endAge + '岁</div>';
+    h += '<div class="dy-gz"><span class="wx-' + tgWx + '">' + p.ctg[tgIdx] + '</span> ' + tgSs + '</div>';
+    h += '<div class="dy-gz"><span class="wx-' + dzWx + '">' + p.cdz[dzIdx] + '</span> ' + dzSs + '</div>';
+    h += '</div>';
+    // 该大运下的流年竖排（无十神）
+    h += '<div class="dy-col-ln">';
+    if(d['ly']) {
+      for(var j = 0; j < d['ly'].length; j++) {
+        if(!d['ly'][j]) continue;
+        var lnTg = d['ly'][j]['lyean'];
+        var lnDz = d['ly'][j]['lyebn'];
+        var lnTgWx = getTgWx(lnTg), lnDzWx = getDzWx(lnDz);
+        var lnYear = startYear + j;
+        var isCurrentLn = lnYear === currentYear;
+        h += '<div class="ln-item-s' + (isCurrentLn ? ' current-ln' : '') + '"><span class="ln-tg wx-' + lnTgWx + '">' + p.ctg[lnTg] + '</span><span class="ln-dz wx-' + lnDzWx + '">' + p.cdz[lnDz] + '</span></div>';
+      }
+    }
+    h += '</div></div>';
+  }
+
+  h += '</div></div>';
+
+  container.innerHTML = h;
+
+  // 更新标题栏的今年X岁
+  var ageBadge = document.getElementById('currentAgeBadge');
+  if(ageBadge && currentAge > 0) {
+    ageBadge.textContent = '今年' + currentAge + '岁';
+  }
+  
+}
+
+var extendCollapsed = false;
+
+function toggleExtend() {
+  extendCollapsed = !extendCollapsed;
+  renderExtend();
+}
+
+function renderExtend() {
+  var grid = document.getElementById('paipanGrid');
+  if(!grid || !R) return;
+  var tg = R['tg'], dz = R['dz'];
+  var riGan = tg[2], riZhi = dz[2];
+
+  // 空亡查表：每柱独立按天干+地支确定所在旬，再查空亡
+  var KONGWANG = {
+    0: [10, 11],   // 甲子旬 → 戌亥
+    2: [0, 1],     // 甲寅旬 → 子丑
+    4: [2, 3],     // 甲辰旬 → 寅卯
+    6: [4, 5],     // 甲午旬 → 辰巳
+    8: [6, 7],     // 甲申旬 → 午未
+    10: [8, 9]     // 甲戌旬 → 申酉
+  };
+
+  var ext = document.getElementById('extendArea');
+  if(!ext) {
+    ext = document.createElement('div');
+    ext.id = 'extendArea';
+    grid.parentNode.insertBefore(ext, grid.nextSibling);
+  }
+
+  // 收起/展开按钮
+  var h = '<div class="pz-extend" style="justify-content:center;">';
+  h += '<div onclick="toggleExtend()" style="cursor:pointer;color:#8B7355;font-size:12px;user-select:none;">';
+  h += extendCollapsed ? '展开 ▼' : '收起 ▲';
+  h += '</div></div>';
+
+  if(!extendCollapsed) {
+    // 扩展信息行：对齐四柱（左侧标签 + 4列数据）
+    var labelW = '36px'; // 与 pillar-label 宽度一致
+    var h12 = '<div class="pz-extend"><div class="ext-label" style="width:' + labelW + '">十二长生</div>';
+    var hzq = '<div class="pz-extend"><div class="ext-label" style="width:' + labelW + '">自坐</div>';
+    var hkw = '<div class="pz-extend"><div class="ext-label" style="width:' + labelW + '">空亡</div>';
+
+    for(var i = 0; i < 4; i++) {
+      // 十二长生：日干对该柱地支
+      var szs = calcSzs(riGan, dz[i]);
+      h12 += '<div class="col-w"><div class="col-value" style="font-size:11px;">' + CSNAMES[szs] + '</div></div>';
+
+      var zszs = calcSzs(tg[i], dz[i]);
+      hzq += '<div class="col-w"><div class="col-value" style="font-size:11px;">' + CSNAMES[zszs] + '</div></div>';
+
+      // 每柱独立算空亡：该柱天干+地支确定所在旬
+      var xunStart = ((dz[i] - tg[i]) % 12 + 12) % 12;
+      var kw = KONGWANG[xunStart] || [0,0];
+      hkw += '<div class="col-w"><div class="col-value" style="font-size:11px;">' + p.cdz[kw[0]] + p.cdz[kw[1]] + '</div></div>';
+    }
+
+    h12 += '</div>';
+    hzq += '</div>';
+    hkw += '</div>';
+
+    h += h12 + hzq + hkw;
+  }
+
+  ext.innerHTML = h;
+}
+
+function selectDayun(i) {
+  selectedDyIndex = i;
+  renderDayun();
+}
+
+function swTab(t) {
+  // 所有导航项
+  document.querySelectorAll('.nav-item').forEach(function(x){ x.classList.toggle('active', x.dataset.page === t); });
+  // 所有页面
+  document.querySelectorAll('.page').forEach(function(x){ x.classList.toggle('hidden', x.id !== 'p' + t.charAt(0).toUpperCase() + t.slice(1)); });
+  
+  // 底部导航栏显示控制
+  var inputBar = document.querySelector('.input-page-bar');
+  var resultBar = document.getElementById('resultBottomBar');
+  var mainBar = document.getElementById('mainBottomBar');
+  
+  if(inputBar) inputBar.style.display = (t === 'input') ? 'flex' : 'none';
+  if(resultBar) resultBar.style.display = (t === 'result') ? 'flex' : 'none';
+  if(mainBar) mainBar.style.display = (t === 'history' || t === 'profile') ? 'flex' : 'none';
+
+    if(t === 'profile') updateProfile();
+    if(t === 'history') { loadHist(); loadFavs(); }
+  document.getElementById('userMenu').classList.remove('show');
+}
+
+function switchHistTab(tab) {
+    var histBtn = document.getElementById('histTabBtn');
+    var favBtn = document.getElementById('favTabBtn');
+    var histList = document.getElementById('histList');
+    var favList = document.getElementById('favList');
+    if(tab === 'hist') {
+      histBtn.style.borderBottomColor = '#4CAF50';
+      histBtn.classList.add('active');
+      favBtn.style.borderBottomColor = 'transparent';
+      favBtn.classList.remove('active');
+      histList.style.display = 'block';
+      favList.style.display = 'none';
+    } else {
+      favBtn.style.borderBottomColor = '#4CAF50';
+      favBtn.classList.add('active');
+      histBtn.style.borderBottomColor = 'transparent';
+      histBtn.classList.remove('active');
+      histList.style.display = 'none';
+      favList.style.display = 'block';
+    }
+  }
+
+  async function loadHist() {
+  // 如果已登录，从云端获取记录
+  if(authToken) {
+    try {
+      var data = await apiGet('/api/records');
+      var cloudRecords = data.records || [];
+      records = cloudRecords.map(function(cr) {
+        var rd = JSON.parse(cr.data || '{}');
+        return {
+          id: cr.id,
+          name: cr.title,
+          gender: rd._gender || 1,
+          solarDate: rd._solarDate || '',
+          solarTime: rd._solarTime || '',
+          ts: cr.created_at
+        };
+      });
+    } catch(e) {
+      console.log('获取云端记录失败:', e);
+    }
+  }
+  
+  var h = '';
+  if(records.length === 0) {
+    h = '<div style="text-align:center;color:#888;padding:20px;">暂无记录</div>';
+  } else {
+    records.forEach(function(r, i) {
+      h += '<div class="hist-item" style="padding:10px;border-bottom:1px solid #eee;cursor:pointer;" onclick="loadRecord(' + i + ')">';
+      h += '<div style="font-weight:600">' + r.name + '</div>';
+      h += '<div style="font-size:12px;color:#888">' + r.solarDate + '</div>';
+      h += '</div>';
+    });
+  }
+  document.getElementById('histList').innerHTML = h;
+}
+async function loadFavs() {
+    if(!authToken) {
+      document.getElementById('favList').innerHTML = '<div style="text-align:center;color:#888;padding:20px;">请先登录</div>';
+      return;
+    }
+    try {
+      var data = await apiGet('/api/records');
+      var cloudRecords = (data && data.records) || [];
+      // 同步 favorites 到 localStorage
+      var cloudFavs = cloudRecords.filter(function(cr) { return cr.favorite; }).map(function(cr) {
+        var rd = JSON.parse(cr.data || '{}');
+        return { cloudId: cr.id, _remark: cr.title, _solarDate: rd._solarDate || '' };
+      });
+      favorites = cloudFavs;
+      localStorage.setItem('bazi_favs', JSON.stringify(favorites));
+      // 同步到 favRecords 供页面点击使用
+      favRecords = cloudRecords.filter(function(cr) { return cr.favorite; });
+      var h = '';
+      if(favRecords.length === 0) {
+        h = '<div style="text-align:center;color:#888;padding:20px;">暂无收藏</div>';
+      } else {
+        favRecords.forEach(function(cr) {
+          var rd = JSON.parse(cr.data || '{}');
+          h += '<div class="hist-item" style="padding:10px;border-bottom:1px solid #eee;cursor:pointer;" onclick="loadCloudRecordByData(\'' + cr.id + '\')">';
+          h += '<div style="font-weight:600">' + cr.title + '</div>';
+          h += '<div style="font-size:12px;color:#888">' + (rd._solarDate || '') + '</div>';
+          h += '</div>';
+        });
+      }
+      document.getElementById('favList').innerHTML = h;
+    } catch(e) {
+      console.error('获取收藏失败:', e);
+      document.getElementById('favList').innerHTML = '<div style="text-align:center;color:#888;padding:20px;">加载失败，请检查网络</div>';
+      showToast('获取收藏失败');
+    }
+  }
+
+  function loadRecord(idx) {
+    var rec = records[idx];
+    if(!rec) { showToast('记录未找到'); return; }
+    // 从云端记录原始数据加载
+    if(authToken && rec.id) {
+      // 查找原始云端记录
+      apiGet('/api/records').then(function(data) {
+        var cr = (data.records || []).find(function(r){ return r.id === rec.id; });
+        if(!cr) { showToast('记录未找到'); return; }
+        loadRecordByData(cr);
+      }).catch(function(e) { showToast('加载失败'); });
+    } else {
+      showToast('记录格式错误');
+    }
+  }
+
+  function loadRecordByData(cr) {
+    var rd = JSON.parse(cr.data || '{}');
+    var p1 = (rd._solarDate || '').split('-');
+    var p2 = (rd._solarTime || '12:00').split(':');
+    try {
+      R = p.fatemaps(rd._gender, parseInt(p1[0]), parseInt(p1[1]), parseInt(p1[2]), parseInt(p2[0]), parseInt(p2[1]), 0);
+      R._remark = cr.title;
+      R._gender = rd._gender;
+      R._solarDate = rd._solarDate;
+      R._solarTime = rd._solarTime;
+      R._cloudId = cr.id;
+      R._favorite = cr.favorite;
+    } catch(e) { showToast('加载失败'); return; }
+    selectedDyIndex = 0;
+    renderAll();
+    updateFavBtn();
+    swTab('result');
+  }
+
+  function loadCloudRecordByData(cloudId) {
+    var cr = favRecords.find(function(r) { return r.id === cloudId; });
+    if(!cr) { showToast('记录未找到'); return; }
+    loadRecordByData(cr);
+  }
+
+
+
+  
+function updateProfile() {
+  document.getElementById('statFav').textContent = favorites.length;
+  document.getElementById('statRec').textContent = records.length;
+  // 计算不重复日期数
+  var dates = {};
+  records.forEach(function(r){ if(r.solarDate) dates[r.solarDate] = true; });
+  document.getElementById('statDays').textContent = Object.keys(dates).length;
+
+  var loggedOut = document.getElementById('profileLoggedOut');
+  var loggedIn = document.getElementById('profileLoggedIn');
+  var logoutArea = document.getElementById('logoutArea');
+  if(currentUser && authToken) {
+    loggedOut.classList.add('hidden');
+    loggedIn.classList.remove('hidden');
+    if(logoutArea) logoutArea.classList.remove('hidden');
+    document.getElementById('profileName').textContent = currentUser.username || '用户';
+  } else {
+    loggedOut.classList.remove('hidden');
+    loggedIn.classList.add('hidden');
+    if(logoutArea) logoutArea.classList.add('hidden');
+  }
+}
+
+function toggleMenu() { document.getElementById('userMenu').classList.toggle('show'); }
+
+function goBack() { if(R) { R = null; swTab('input'); } else history.back(); }
+
+function isFav() { if(!R || !R._cloudId) return false; return favorites.some(f => f.cloudId === R._cloudId); }
+async function toggleFav() {
+    if(!authToken) { showToast('请先登录'); return; }
+    if(!R) { showToast('请先排盘'); return; }
+    if(!R._cloudId) {
+      // 当前命盘未保存到云端，先保存再收藏
+      try { 
+        await saveRecToCloud(R); 
+      } catch(e) {
+        console.error('保存失败:', e);
+        showToast('保存失败: ' + (e.message || '网络错误'));
+        return;
+      }
+      if(!R._cloudId) { 
+        showToast('保存失败，请重试'); 
+        return; 
+      }
+    }
+    try {
+      var res = await apiPut('/api/records/' + R._cloudId + '/fav', {});
+      if(res && typeof res.favorite === 'boolean') {
+        var isFavNow = res.favorite;
+        if(isFavNow) {
+          if(!favorites.some(function(f) { return f.cloudId === R._cloudId; })) {
+            favorites.push({cloudId: R._cloudId, _remark: R._remark, _solarDate: R._solarDate});
+          }
+        } else {
+          favorites = favorites.filter(function(f) { return f.cloudId !== R._cloudId; });
+        }
+        localStorage.setItem('bazi_favs', JSON.stringify(favorites));
+        R._favorite = isFavNow;
+        showToast(isFavNow ? '已收藏' : '取消收藏');
+        updateFavBtn();
+      } else {
+        showToast('操作失败: 服务器返回异常');
+      }
+    } catch(e) { 
+      console.error('收藏操作失败:', e); 
+      showToast('操作失败: ' + (e.message || '网络错误'));
+    }
+  }
+
+  function updateFavBtn() {
+    var btn = document.getElementById('favBtn');
+    if(!btn) return;
+    if(!authToken) { btn.textContent = '收藏'; btn.style.color = ''; return; }
+    var faved = isFav();
+    btn.textContent = faved ? '已收藏' : '收藏';
+    btn.style.color = faved ? '#e74c3c' : '';
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display='none'; }, 2000);
+}
+
+// ==================== 云端 API ====================
+var API_BASE = 'https://bz.lfyx.cc.cd';
+var authToken = null;
+try { authToken = localStorage.getItem('bazi_token') || null; } catch(e) {}
+
+function apiHeaders() {
+  var h = { 'Content-Type': 'application/json' };
+  if(authToken) h['Authorization'] = 'Bearer ' + authToken;
+  return h;
+}
+
+async function apiPost(path, body) {
+  try {
+    var resp = await fetch(API_BASE + path, {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify(body)
+    });
+    var data = await resp.json();
+    if(data.error) throw new Error(data.error);
+    return data;
+  } catch(e) {
+    console.error('API Error:', path, e);
+    throw e;
+  }
+}
+
+async function apiGet(path) {
+  try {
+    var resp = await fetch(API_BASE + path, { headers: apiHeaders() });
+    var data = await resp.json();
+    if(data.error) throw new Error(data.error);
+    return data;
+  } catch(e) {
+    console.error('API Error:', path, e);
+    throw e;
+  }
+}
+
+async function apiPut(path, body) {
+  try {
+    var resp = await fetch(API_BASE + path, {
+      method: 'PUT',
+      headers: apiHeaders(),
+      body: JSON.stringify(body)
+    });
+    var data = await resp.json();
+    if(data.error) throw new Error(data.error);
+    return data;
+  } catch(e) {
+    console.error('API Error:', path, e);
+    throw e;
+  }
+}
+
+async function apiDelete(path) {
+  try {
+    var resp = await fetch(API_BASE + path, { method: 'DELETE', headers: apiHeaders() });
+    var data = await resp.json();
+    if(data.error) throw new Error(data.error);
+    return data;
+  } catch(e) {
+    console.error('API Error:', path, e);
+    throw e;
+  }
+}
+
+// ==================== 登录注册弹窗 ====================
+var authMode = 'login';
+
+function openAuth(mode) {
+  authMode = mode || 'login';
+  switchAuthTab(authMode);
+  document.getElementById('authModal').classList.remove('hidden');
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authUser').value = '';
+  document.getElementById('authPass').value = '';
+}
+
+function closeAuth() {
+  document.getElementById('authModal').classList.add('hidden');
+}
+
+function switchAuthTab(mode) {
+  authMode = mode;
+  document.getElementById('authTabLogin').classList.toggle('active', mode === 'login');
+  document.getElementById('authTabReg').classList.toggle('active', mode === 'register');
+  document.getElementById('authSubmitBtn').textContent = mode === 'login' ? '登录' : '注册';
+  document.getElementById('authEmailRow').classList.toggle('hidden', mode === 'login');
+  document.getElementById('authCodeRow').classList.toggle('hidden', mode === 'login');
+  document.getElementById('authConfirmRow').classList.toggle('hidden', mode === 'login');
+  document.getElementById('authHint').innerHTML = mode === 'login'
+    ? '还没有账号？<a href="javascript:void(0)" onclick="switchAuthTab(\'register\')" style="color:#8B7355">去注册</a>'
+    : '已有账号？<a href="javascript:void(0)" onclick="switchAuthTab(\'login\')" style="color:#8B7355">去登录</a>';
+  document.getElementById('authError').style.display = 'none';
+}
+
+
+async function doAuth() {
+  var username = document.getElementById('authUser').value.replace(/\D/g, '');
+  document.getElementById('authUser').value = username;
+  var password = document.getElementById('authPass').value;
+  var errEl = document.getElementById('authError');
+  if(!username) { errEl.textContent = '请输入手机号'; errEl.style.display = 'block'; return; }
+  if(!password) { errEl.textContent = '请输入密码'; errEl.style.display = 'block'; return; }
+  if(password.length < 6) { errEl.textContent = '密码至少6位'; errEl.style.display = 'block'; return; }
+  var email = '', code = '';
+  if(authMode === 'register') {
+    var confirm = document.getElementById('authPassConfirm').value;
+    if(password !== confirm) { errEl.textContent = '两次密码不一致'; errEl.style.display = 'block'; return; }
+    email = document.getElementById('authEmail').value.trim();
+    if(!email) { errEl.textContent = '请输入邮箱'; errEl.style.display = 'block'; return; }
+    if(!/^[\w.-]+@[\w.-]+\.\w+$/.test(email)) { errEl.textContent = '邮箱格式不正确'; errEl.style.display = 'block'; return; }
+    code = document.getElementById('authCode').value.trim();
+    if(!code) { errEl.textContent = '请输入验证码'; errEl.style.display = 'block'; return; }
+    if(code.length !== 6) { errEl.textContent = '验证码为6位数字'; errEl.style.display = 'block'; return; }
+  }
+  var btn = document.getElementById('authSubmitBtn');
+  btn.disabled = true; btn.textContent = '请稍候...';
+  try {
+    var path = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    var payload = { username: username, password: password };
+    if(authMode === 'register') payload = { username: username, password: password, email: email, code: code };
+    var data = await apiPost(path, payload);
+    console.log('Auth response:', data);
+    
+    if(!data.token) {
+      throw new Error('登录失败：未返回token');
+    }
+    
+    authToken = data.token;
+    localStorage.setItem('bazi_token', authToken);
+    
+    // 确保user对象存在，如果API没返回则构造一个
+    currentUser = data.user || { id: username, username: username };
+    localStorage.setItem('bazi_user', JSON.stringify(currentUser));
+    
+    console.log('Login success, currentUser:', currentUser, 'authToken exists:', !!authToken);
+    
+    closeAuth();
+    showToast(authMode === 'login' ? '登录成功' : '注册成功');
+    
+    // 强制刷新个人中心页面
+    updateProfile();
+    
+    // 延迟同步记录
+    setTimeout(function() {
+      syncCloudRecords();
+    }, 200);
+  } catch(e) {
+    errEl.textContent = e.message || '网络错误，请重试';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = authMode === 'login' ? '登录' : '注册';
+  }
+}
+
+var codeCooldown = 0;
+var codeTimer = null;
+async function sendVerifyCode() {
+  var errEl = document.getElementById('authError');
+  var email = document.getElementById('authEmail').value.trim();
+  if(!email) { errEl.textContent = '请先输入邮箱'; errEl.style.display = 'block'; return; }
+  if(!/^[\w.-]+@[\w.-]+\.\w+$/.test(email)) { errEl.textContent = '邮箱格式不正确'; errEl.style.display = 'block'; return; }
+  if(codeCooldown > 0) return;
+  
+  var btn = document.getElementById('sendCodeBtn');
+  btn.disabled = true;
+  btn.textContent = '发送中...';
+  
+  try {
+    await apiPost('/api/auth/send-code', { email: email });
+    showToast('验证码已发送');
+    codeCooldown = 60;
+    codeTimer = setInterval(function() {
+      codeCooldown--;
+      if(codeCooldown <= 0) {
+        clearInterval(codeTimer);
+        btn.textContent = '获取验证码';
+        btn.disabled = false;
+      } else {
+        btn.textContent = codeCooldown + '秒';
+      }
+    }, 1000);
+  } catch(e) {
+    errEl.textContent = e.message || '发送失败';
+    errEl.style.display = 'block';
+    btn.textContent = '获取验证码';
+    btn.disabled = false;
+  }
+}
+
+function doLogout() {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('bazi_token');
+  localStorage.removeItem('bazi_user');
+  updateProfile();
+  showToast('已退出登录');
+}
+
+// ==================== 云端记录同步 ====================
+var syncLock = false;
+
+async function syncCloudRecords() {
+  if(!authToken || syncLock) return;
+  syncLock = true;
+  try {
+    var data = await apiGet('/api/records');
+    var cloudRecords = data.records || [];
+    // 直接使用云端记录（不合并本地）
+    records = cloudRecords.map(function(cr) {
+      try {
+        var rd = JSON.parse(cr.data);
+        return {
+          id: cr.id,
+          name: cr.title,
+          gender: rd._gender || 1,
+          solarDate: rd._solarDate || '',
+          solarTime: rd._solarTime || '',
+          ts: cr.created_at,
+          cloudId: cr.id,
+          favorite: cr.favorite ? true : false
+        };
+      } catch(e) { return null; }
+    }).filter(function(r) { return r !== null; });
+    // 按时间排序
+    records.sort(function(a, b) { return new Date(b.ts) - new Date(a.ts); });
+    updateProfile();
+    // 更新同步状态
+    var ss = document.getElementById('syncStatus');
+    if(ss) ss.textContent = '已同步 ' + cloudRecords.length + ' 条云端记录';
+  } catch(e) {
+    console.error('同步失败:', e);
+  } finally {
+    syncLock = false;
+  }
+}
+
+async function saveRecToCloud(rec) {
+    if(!authToken) throw new Error('未登录');
+    // 先检查云端是否已有相同记录
+    try {
+      var existing = await apiGet('/api/records');
+      var cloudRecords = existing.records || [];
+      var duplicate = cloudRecords.find(function(cr) {
+        var rd = JSON.parse(cr.data || '{}');
+        return rd._gender === rec._gender &&
+               rd._solarDate === rec._solarDate &&
+               rd._solarTime === rec._solarTime &&
+               cr.title === (rec._remark || '命盘');
+      });
+      if(duplicate) {
+        rec._cloudId = duplicate.id;
+        return; // 已存在，不重复保存
+      }
+    } catch(e) {
+      console.error('检查重复失败:', e);
+      // 继续尝试保存
+    }
+    try {
+      var payload = {
+        title: rec._remark || '命盘',
+        data: JSON.stringify({
+          _gender: rec._gender,
+          _solarDate: rec._solarDate,
+          _solarTime: rec._solarTime,
+          _remark: rec._remark,
+          _name: (rec._gender === 1 ? '乾造' : '坤造') + (rec._remark || '')
+        })
+      };
+      var result = await apiPost('/api/records', payload);
+      if(result.id) {
+        rec._cloudId = result.id;
+      } else {
+        throw new Error('服务器未返回记录ID');
+      }
+    } catch(e) {
+      console.error('云端保存失败:', e);
+      throw e;
+    }
+  }
+
+  
+</script>
