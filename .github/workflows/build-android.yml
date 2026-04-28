@@ -40,19 +40,14 @@ jobs:
     - name: Build APK
       run: |
         cd android
-        bash gradlew assembleRelease --stacktrace 2>&1 | tee build.log || true
-        if [ ! -f app/build/outputs/apk/release/app-release-unsigned.apk ]; then
-          echo "BUILD FAILED - see build.log"
-          cat build.log | tail -100
+        bash gradlew assembleRelease --stacktrace 2>&1 | tee build.log
+        echo "Exit code: ${PIPESTATUS[0]}"
+        if [ ${PIPESTATUS[0]} -ne 0 ]; then
+          echo "=== BUILD FAILED ==="
+          echo "=== LAST 50 LINES OF BUILD LOG ==="
+          tail -50 build.log
           exit 1
         fi
-    
-    - name: Upload build log
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-log
-        path: android/build.log
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
