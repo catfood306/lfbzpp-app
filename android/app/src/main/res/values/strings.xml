@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">lfbzpp-app</string>
+    <string name="title_activity_main">lfbzpp-app</string>
+    <string name="package_name">com.langfeng.bazi</string>
+    <string name="custom_url_scheme">com.langfeng.bazi</string>
+</resources>
