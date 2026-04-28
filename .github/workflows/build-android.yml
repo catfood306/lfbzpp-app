@@ -40,17 +40,13 @@ jobs:
     - name: Build APK
       run: |
         cd android
-        bash gradlew assembleRelease --stacktrace 2>&1 | tee build.log
-        echo "Exit code: ${PIPESTATUS[0]}"
-        if [ ${PIPESTATUS[0]} -ne 0 ]; then
-          echo "=== BUILD FAILED ==="
-          echo "=== LAST 50 LINES OF BUILD LOG ==="
-          tail -50 build.log
-          exit 1
-        fi
+        bash gradlew assembleRelease --stacktrace
+        ls -la app/build/outputs/apk/release/
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: lfbzpp-apk
-        path: android/app/build/outputs/apk/release/*.apk
+        path: |
+          android/app/build/outputs/apk/release/*.apk
+          android/app/build/outputs/apk/release/*
