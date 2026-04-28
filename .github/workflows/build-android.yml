@@ -40,13 +40,18 @@ jobs:
     - name: Build APK
       run: |
         cd android
-        bash gradlew assembleRelease --stacktrace
+        bash gradlew assembleRelease --stacktrace 2>&1 | tee build.log
         ls -la app/build/outputs/apk/release/
+    
+    - name: Upload build log
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: build-log
+        path: android/build.log
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: lfbzpp-apk
-        path: |
-          android/app/build/outputs/apk/release/*.apk
-          android/app/build/outputs/apk/release/*
+        path: android/app/build/outputs/apk/release/*.apk
